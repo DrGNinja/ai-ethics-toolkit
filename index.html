@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI Ethics Faculty Toolkit — Lynn University</title>
+<style>
+:root{
+  --ink:#0A2540; --ink-2:#14355A; --blue:#1F5C99; --steel:#4A7BA8;
+  --amber:#E0A458; --rust:#A6423E; --green:#2E7D5B;
+  --paper:#FFFFFF; --tint:#EEF3F8; --line:#D8E2ED; --mute:#5F7183;
+  --serif: Cambria, "Bookman Old Style", Georgia, serif;
+  --sans: "Segoe UI", Calibri, system-ui, -apple-system, sans-serif;
+  --r:10px;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--tint);color:var(--ink);font-family:var(--sans);line-height:1.55;-webkit-font-smoothing:antialiased}
+.wrap{max-width:940px;margin:0 auto;padding:0 20px 80px}
+
+header{background:var(--ink);color:#fff;padding:34px 0 0}
+header .wrap{padding-bottom:0}
+.eyebrow{font-size:11px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--amber);margin:0 0 10px}
+header h1{font-family:var(--serif);font-size:clamp(28px,5vw,42px);font-weight:700;margin:0 0 8px;letter-spacing:-.01em}
+header p{margin:0 0 24px;color:#C6D6E6;max-width:62ch;font-size:15px}
+nav{display:flex;gap:2px;flex-wrap:wrap}
+nav button{appearance:none;border:0;background:transparent;color:#8FA9C2;font-family:var(--sans);font-size:14px;font-weight:600;
+  padding:13px 16px;cursor:pointer;border-radius:var(--r) var(--r) 0 0;transition:background .15s,color .15s}
+nav button:hover{color:#fff;background:var(--ink-2)}
+nav button[aria-selected="true"]{background:var(--tint);color:var(--ink)}
+nav button:focus-visible{outline:2px solid var(--amber);outline-offset:-3px}
+
+.panel{display:none;padding-top:34px}
+.panel.on{display:block}
+h2{font-family:var(--serif);font-size:26px;margin:0 0 6px;font-weight:700}
+.lede{color:var(--mute);margin:0 0 26px;max-width:70ch}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:var(--r);padding:22px 24px;margin-bottom:16px}
+.card h3{font-family:var(--serif);font-size:19px;margin:0 0 10px}
+button.act{appearance:none;border:0;border-radius:7px;background:var(--ink);color:#fff;font-family:var(--sans);
+  font-size:14px;font-weight:600;padding:11px 20px;cursor:pointer;transition:background .15s}
+button.act:hover{background:var(--blue)}
+button.act:disabled{background:var(--steel);cursor:not-allowed}
+button.ghost{background:transparent;color:var(--blue);border:1px solid var(--line)}
+button.ghost:hover{background:var(--tint);color:var(--ink)}
+textarea,select,input{width:100%;font-family:var(--sans);font-size:14.5px;color:var(--ink);
+  border:1px solid var(--line);border-radius:7px;padding:11px 13px;background:var(--paper)}
+textarea{min-height:150px;resize:vertical;line-height:1.5}
+label.fld{display:block;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--mute);margin:0 0 6px}
+.row{display:flex;gap:14px;flex-wrap:wrap;align-items:center;margin-top:16px}
+.note{font-size:13px;color:var(--mute)}
+.out{white-space:pre-wrap;font-size:14.5px;line-height:1.65;margin-top:18px;padding-top:18px;border-top:1px solid var(--line)}
+.tag{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+  padding:4px 9px;border-radius:20px;background:var(--tint);color:var(--blue);margin:0 6px 6px 0}
+.tag.warn{background:#F7E9E8;color:var(--rust)}
+.tag.good{background:#E7F2EC;color:var(--green)}
+
+/* simulator */
+.scene{font-family:var(--serif);font-size:19px;line-height:1.5;margin:0 0 18px}
+.choice{display:block;width:100%;text-align:left;background:var(--paper);border:1px solid var(--line);
+  border-radius:8px;padding:14px 16px;margin-bottom:9px;cursor:pointer;font-family:var(--sans);
+  font-size:14.5px;color:var(--ink);transition:border-color .15s,background .15s}
+.choice:hover{border-color:var(--steel);background:var(--tint)}
+.choice:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+.choice.picked{border-color:var(--ink);border-width:2px;background:var(--tint)}
+.verdict{margin-top:18px;padding:18px 20px;border-radius:8px;background:var(--tint);border:1px solid var(--line)}
+.verdict h4{margin:0 0 8px;font-family:var(--serif);font-size:17px}
+.counter{font-size:12px;color:var(--mute);letter-spacing:.06em;text-transform:uppercase;font-weight:700}
+.rolegrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+.rolecard{background:var(--paper);border:1px solid var(--line);border-radius:var(--r);padding:20px;cursor:pointer;
+  text-align:left;font-family:var(--sans);transition:border-color .15s,transform .1s}
+.rolecard:hover{border-color:var(--steel);transform:translateY(-1px)}
+.rolecard h3{font-family:var(--serif);font-size:20px;margin:0 0 6px}
+.rolecard p{margin:0;font-size:13.5px;color:var(--mute)}
+.crumb{font-size:12.5px;color:var(--mute);margin:0 0 14px}
+.crumb b{color:var(--ink)}
+.voterow{display:flex;align-items:center;gap:10px;margin:4px 0 10px}
+.voterow .vlabel{flex:1;font-size:13.5px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.voterow .vbar{flex:2;height:16px;background:var(--tint);border-radius:8px;overflow:hidden}
+.voterow .vbar i{display:block;height:100%;background:var(--blue);width:0;transition:width .3s ease}
+.voterow b{min-width:34px;text-align:right;font-size:14px}
+.vbtn{border:1px solid var(--line);background:var(--paper);border-radius:6px;font-size:15px;
+  width:34px;height:30px;cursor:pointer;color:var(--ink);font-weight:700}
+.vbtn:hover{background:var(--tint)}
+.votebox{margin-top:16px;padding:16px 18px;border:1px dashed var(--steel);border-radius:8px;background:#F7FAFD}
+.votebox h4{margin:0 0 4px;font-family:var(--serif);font-size:16px}
+
+/* readiness */
+.q{padding:15px 0;border-bottom:1px solid var(--line)}
+.q:last-child{border-bottom:0}
+.q p{margin:0 0 10px;font-size:14.5px}
+.scale{display:flex;gap:6px;flex-wrap:wrap}
+.scale button{flex:1;min-width:74px;font-size:12.5px;padding:8px 4px;border:1px solid var(--line);
+  background:var(--paper);border-radius:6px;cursor:pointer;font-family:var(--sans);color:var(--mute)}
+.scale button:hover{border-color:var(--steel)}
+.scale button.on{background:var(--ink);border-color:var(--ink);color:#fff;font-weight:600}
+.dimhead{font-family:var(--serif);font-size:17px;font-weight:700;margin:0 0 2px}
+.dimsub{font-size:12.5px;color:var(--mute);margin:0 0 6px}
+.bar{height:9px;background:var(--tint);border-radius:5px;overflow:hidden;margin:5px 0 3px}
+.bar i{display:block;height:100%;background:var(--blue);border-radius:5px;transition:width .5s ease}
+.bar i.low{background:var(--rust)}
+
+/* detector */
+.passage{font-family:var(--serif);font-size:15.5px;line-height:1.65;background:var(--tint);
+  border-radius:8px;padding:16px 18px;margin:0 0 14px}
+.meter{display:flex;align-items:center;gap:12px;margin:10px 0}
+.meter .track{flex:1;height:22px;background:var(--tint);border-radius:11px;overflow:hidden}
+.meter .track i{display:block;height:100%;background:var(--rust);width:0;transition:width 1.1s ease}
+.meter b{font-family:var(--serif);font-size:20px;min-width:56px;text-align:right}
+
+/* policy library */
+.lib{position:relative;background:var(--paper);border:1px solid var(--line);border-radius:var(--r);
+  padding:20px 22px;margin-bottom:16px}
+.lib h3{font-family:var(--serif);font-size:18px;margin:0 0 4px;padding-right:80px}
+.lib .src{font-size:12px;color:var(--mute);margin:0 0 12px}
+.lib pre{white-space:pre-wrap;font-family:var(--sans);font-size:14px;line-height:1.6;margin:0;
+  background:var(--tint);border-radius:8px;padding:14px 16px}
+.copy{position:absolute;top:16px;right:16px;font-size:12px;font-weight:700;border:1px solid var(--line);
+  background:var(--paper);color:var(--blue);border-radius:6px;padding:6px 12px;cursor:pointer}
+.copy:hover{background:var(--tint)}
+.copy.done{background:#E7F2EC;color:var(--green);border-color:#BFDCCB}
+
+footer{margin-top:40px;padding-top:20px;border-top:1px solid var(--line);font-size:12.5px;color:var(--mute)}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <p class="eyebrow">Lynn University &nbsp;•&nbsp; Faculty Development</p>
+    <h1>AI Ethics Faculty Toolkit</h1>
+    <p>Five working tools from <em>The Ethics of AI</em>. Everything runs in your browser.
+       Nothing you enter is stored or sent anywhere. Use the tools in the session, keep them for the semester.</p>
+    <nav role="tablist">
+      <button role="tab" data-t="dilemma"   aria-selected="true">Decision Simulator</button>
+      <button role="tab" data-t="redesign"  aria-selected="false">Assignment Redesign</button>
+      <button role="tab" data-t="readiness" aria-selected="false">Readiness Check</button>
+      <button role="tab" data-t="detector"  aria-selected="false">Detector Demo</button>
+      <button role="tab" data-t="policy"    aria-selected="false">Policy Library</button>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap">
+
+<!-- ================= 1. DECISION SIMULATOR ================= -->
+<section class="panel on" id="p-dilemma">
+  <h2>Ethical Decision Simulator</h2>
+  <p class="lede">Pick a seat at the table. Each scenario has two decision points. Every choice shows its
+     consequence — and which principle of the Lynn generative AI policy it honors or trades away.
+     Presenting to a room? Turn on <strong>Room vote</strong> and tally hands before revealing anything.</p>
+  <div class="card" id="simBox"></div>
+</section>
+
+<!-- ================= 2. REDESIGN ================= -->
+<section class="panel" id="p-redesign">
+  <h2>Assignment Redesign Assistant</h2>
+  <p class="lede">Paste one real assignment. You get an honest read on how exposed it is to a current model,
+     a redesign using two of the eight patterns, syllabus language for the level you choose, and a rubric
+     line that grades process. All analysis happens on this page.</p>
+  <div class="card">
+    <label class="fld" for="rIn">Your assignment prompt</label>
+    <textarea id="rIn" placeholder="Paste the assignment exactly as students see it — including the deliverable, the length, and how it's graded."></textarea>
+    <div class="row">
+      <div style="flex:1;min-width:230px">
+        <label class="fld" for="rRung">AI level for this assignment</label>
+        <select id="rRung">
+          <option value="C">C — Prohibited. No generative AI.</option>
+          <option value="B">B — Limited / by permission.</option>
+          <option value="A" selected>A — Integrate &amp; disclose (Lynn default).</option>
+          <option value="A3">A, designated — AI required, and assessed.</option>
+        </select>
+      </div>
+      <div style="flex:1;min-width:230px">
+        <label class="fld" for="rDisc">Discipline (optional)</label>
+        <input id="rDisc" placeholder="Aeronautics, Communication, Music…">
+      </div>
+    </div>
+    <div class="row"><button class="act" id="rGo">Redesign this assignment</button></div>
+    <div class="out" id="rOut" hidden></div>
+  </div>
+</section>
+
+<!-- ================= 3. READINESS ================= -->
+<section class="panel" id="p-readiness">
+  <h2>AI Readiness Self-Assessment</h2>
+  <p class="lede">Fifteen questions. Answer for <strong>your course</strong>, not for the institution —
+     your course is the unit you control. Nothing is collected.</p>
+  <div class="card" id="qBox"></div>
+  <div class="row"><button class="act" id="sGo">Show my profile</button>
+    <button class="act ghost" id="sReset">Start over</button></div>
+  <div class="card" id="sOut" hidden></div>
+</section>
+
+<!-- ================= 4. DETECTOR ================= -->
+<section class="panel" id="p-detector">
+  <h2>Detector Fallibility Demo</h2>
+  <p class="lede">Three passages. Two minutes. Read each and decide whether a person or a model wrote it,
+     then see what a detector would say.</p>
+  <div class="card" id="detBox"></div>
+  <div class="card" id="detNote" hidden></div>
+</section>
+
+<!-- ================= 5. POLICY LIBRARY ================= -->
+<section class="panel" id="p-policy">
+  <h2>Policy Language Library</h2>
+  <p class="lede">Copy-and-paste language for your syllabus and assignments, taken from the Lynn University
+     Policy on the Use of Generative AI and from working course practice. Nothing here needs to be written
+     from scratch.</p>
+  <div id="libBox"></div>
+
+  <div class="card">
+    <h3>Reference frameworks</h3>
+    <p style="margin:0 0 10px;font-size:14px"><strong>Four terms, one goal.</strong>
+      AI Ethics asks what we should — and should not — do with AI. Responsible AI puts those principles
+      into practice when building and using AI. AI Safety focuses on preventing serious or unintended harm.
+      AI Governance is the policies, processes, rules, and structures behind responsible use.
+      They overlap, but they are not the same thing.</p>
+    <p style="margin:0 0 10px;font-size:14px"><strong>Core principles of an AI code of ethics:</strong>
+      fairness, transparency, explainability, accountability, privacy, safety and "do no harm,"
+      and sustainability — with final decisions kept in human hands.</p>
+    <p style="margin:0;font-size:14px"><strong>External anchor:</strong> the
+      "ETHICAL Principles AI Framework for Higher Education" by Wynants, Childers, De La Torre Roman,
+      Budar-Turner, &amp; Vasquez (2025), California State University, Fullerton — seven pillars:
+      Exploration &amp; Evaluation, Transparency &amp; Accountability, Human-Centered Approach,
+      Integrity &amp; Academic Honesty, Continuous Learning &amp; Innovation, Accessibility &amp;
+      Inclusivity, Legal &amp; Ethical Compliance. Licensed under CC BY-NC 4.0.</p>
+  </div>
+</section>
+
+<footer>
+  George Antoniou, Ph.D. &nbsp;•&nbsp; College of Business and Management, Lynn University.
+  These tools produce starting points that require your disciplinary judgment — which is the entire
+  argument of the session.
+</footer>
+</div>
+
+<script>
+"use strict";
+var $=function(id){return document.getElementById(id);};
+
+/* ---------- tabs ---------- */
+var tabs=Array.prototype.slice.call(document.querySelectorAll('nav button'));
+function show(name,push){
+  tabs.forEach(function(b){b.setAttribute('aria-selected',String(b.dataset.t===name));});
+  Array.prototype.forEach.call(document.querySelectorAll('.panel'),function(p){
+    p.classList.toggle('on',p.id==='p-'+name);});
+  if(location.hash.slice(1)!==name){
+    try{ if(push){history.pushState(null,'','#'+name);} else {history.replaceState(null,'','#'+name);} }catch(e){}
+  }
+}
+tabs.forEach(function(b){b.onclick=function(){show(b.dataset.t,true);};});
+addEventListener('popstate',function(){var h=location.hash.slice(1); show(h||'dilemma',false);});
+addEventListener('hashchange',function(){var h=location.hash.slice(1);if(h)show(h);});
+
+/* ============================================================
+   1 — ETHICAL DECISION SIMULATOR
+   Roles -> scenarios -> two decision stages -> consequences.
+   Each verdict names the Lynn policy principle it touches.
+   ============================================================ */
+var ROLES=[
+ {id:"faculty", name:"Faculty", desc:"Two situations from the front of the classroom: a weightless paper, and AI-assisted grading."},
+ {id:"student", name:"Student", desc:"Two situations from the other side: to disclose or not, and what to do when the model is wrong."},
+ {id:"admin",   name:"Administrator", desc:"Two situations from the office: a detector sales pitch, and a new AI platform that wants campus access."}
+];
+
+var SIM={
+faculty:[
+ {title:"The weightless paper",
+  stages:[
+   {s:"A student submits a paper that is accurate, well organized, and oddly weightless. No citations, no personal insight. Your syllabus states level A: AI permitted with disclosure. Nothing was disclosed.",
+    c:[
+     {t:"Run it through a detector and act on the score.",
+      v:"A detector score is not evidence — it is a probability you cannot show a student or an appeals board. The Lynn policy itself says the university does not rely on AI-output detectors for adjudication. Seven widely used detectors averaged a 61% false-positive rate on essays by non-native English speakers.",
+      p:"Accuracy & accountability", k:"warn"},
+     {t:"Ask the student to walk you through their process, in person.",
+      v:"The strongest first move available. It works whether or not AI was involved, it produces the process evidence the policy points to, and it treats the student as someone who might have an explanation.",
+      p:"Integrity & accountability — this is the move", k:"good"},
+     {t:"Give it a low grade for missing citations and say nothing about AI.",
+      v:"Defensible on the rubric, but it dodges the thing you noticed. The student learns that citations matter and learns nothing about disclosure — so it happens again next term.",
+      p:"Transparency", k:""},
+     {t:"Report it to academic integrity immediately.",
+      v:"Premature. You have a suspicion, not a finding, and no conversation has happened. Escalating first spends institutional trust you will need later.",
+      p:"Integrity & accountability", k:"warn"}]},
+   {s:"In the conversation, the student says: \u201CI used AI to outline and fix my grammar. I didn\u2019t know that counted as something I had to disclose.\u201D",
+    c:[
+     {t:"Treat it as a violation anyway. The rule is the rule.",
+      v:"Only as strong as your syllabus wording. If it did not say that outlining and grammar help count as AI use, you are enforcing a scope you never wrote. The policy default asks for a brief AI Use Note for exactly these activities — but the student has to have been told.",
+      p:"Transparency", k:"warn"},
+     {t:"Accept the explanation, clarify the disclosure scope in writing to the whole class, and require the AI Use Note going forward.",
+      v:"This closes the gap where it actually is — in the communication. One announcement, one template, and the ambiguity is gone for every student at once.",
+      p:"Transparency — this is the move", k:"good"},
+     {t:"Let it go quietly and change nothing.",
+      v:"Kind in the moment, and it guarantees a repeat. The next weightless paper will come with the same honest confusion, and you will have this conversation again in November.",
+      p:"Integrity & accountability", k:""}]}
+  ]},
+ {title:"Grading with AI",
+  stages:[
+   {s:"You have sixty essays and a Sunday. A colleague suggests pasting the papers into a free public chatbot and asking it to draft grades and personalized feedback.",
+    c:[
+     {t:"Do it. The feedback improves and everyone benefits.",
+      v:"Student work is FERPA-protected. The Lynn policy is explicit: no student work, names, or grades in public AI tools — ever. It does not feel like a disclosure. It feels like typing. That is exactly why it happens.",
+      p:"Privacy & data protection", k:"warn"},
+     {t:"Strip the names first, then paste the papers.",
+      v:"Better instinct, wrong conclusion. The essays are still student work — removing the name does not remove the ownership, and drafts are often identifiable from content alone. The restriction covers the work, not just the label on it.",
+      p:"Privacy & data protection", k:"warn"},
+     {t:"Use an institution-approved tool, no identifying data, and personally verify every substantive claim before it reaches a student.",
+      v:"This is the workable version. Approved tools, de-identified use, and a human who actually reads the output before signing it. AI handles the parts where being wrong is cheap; you handle the parts where being wrong is expensive.",
+      p:"Privacy & data protection — this is the move", k:"good"},
+     {t:"Refuse AI for feedback entirely.",
+      v:"Safe, and a real option. But name the trade honestly: sixty essays of thin feedback delivered late may serve students worse than sixty essays of verified feedback delivered on time.",
+      p:"None traded — but check the trade", k:""}]},
+   {s:"It works well. Your dean hears about it and asks you to present the workflow to the whole department next month.",
+    c:[
+     {t:"Share the workflow as a time-saver, full stop.",
+      v:"What spreads is what you show. Without the guardrails attached, the version that reaches thirty colleagues is \u201Cpaste and send\u201D — and the first breach will have your name on the origin story.",
+      p:"Integrity & accountability", k:"warn"},
+     {t:"Share it with the data rules, the verification step, and who answers a grade appeal built in.",
+      v:"This is how one faculty member\u2019s practice becomes governance. The workflow travels with its constraints, and the department adopts a defensible version instead of a fast one.",
+      p:"Transparency — this is the move", k:"good"},
+     {t:"Decline. What works for you may not work for others.",
+      v:"Modest, but it leaves thirty colleagues to reinvent this alone — and some of them will reinvent the unsafe version. Expertise that stays private does not protect anyone.",
+      p:"Accessibility & equity", k:""}]}
+  ]}
+],
+student:[
+ {title:"The thirty-second note",
+  stages:[
+   {s:"Your paper is due tonight. You used AI to build the outline and fix your grammar. All the ideas and all the final wording are yours. The syllabus states level A: AI permitted with disclosure.",
+    c:[
+     {t:"Submit without a note. Nothing AI wrote appears in the paper.",
+      v:"The policy asks you to disclose what tools were used and for which parts — outlining and grammar count. An undisclosed permitted use reads exactly like a hidden one, and you lose the protection disclosure gives you.",
+      p:"Transparency", k:"warn"},
+     {t:"Add the AI Use Note: tool, purpose, what you changed. Thirty seconds.",
+      v:"This is the whole system working as designed. The note costs you nothing, ends most disputes before they start, and turns your AI use from a suspicion into a documented process.",
+      p:"Transparency — this is the move", k:"good"},
+     {t:"Email the professor at 11 p.m. to ask if outlining counts.",
+      v:"Honest, but the answer is already in the policy: disclose tools, parts, and revisions. When the rule covers it, the note is faster than the question.",
+      p:"None traded — the note was enough", k:""}]},
+   {s:"While drafting, the AI also gave you a statistic that makes your argument stronger. You cannot find it anywhere else.",
+    c:[
+     {t:"Keep it. It sounds right, and the paper is due.",
+      v:"The policy is direct: you are responsible for verifying accuracy and originality. If the number is fabricated — and unverifiable numbers usually are — the error is yours, not the model\u2019s.",
+      p:"Accuracy & accountability", k:"warn"},
+     {t:"Cut it, or keep only what you can verify in a real source.",
+      v:"The right call. An argument that survives without the invented number is stronger than one that depends on it. Verification is the skill the assignment is actually testing.",
+      p:"Accuracy & accountability — this is the move", k:"good"},
+     {t:"Cite the chatbot as the source, APA style.",
+      v:"A citation records where a claim came from — it does not make the claim true. Citing the model documents your process, which is good, but the unverifiable statistic is still unverifiable.",
+      p:"Accuracy & accountability", k:""}]}
+  ]},
+ {title:"The paid tier",
+  stages:[
+   {s:"Your course expects AI use on a major project. The free tools keep hitting limits, and the assignment quietly assumes the paid tier. You cannot afford it this month. A friend offers to share their paid account.",
+    c:[
+     {t:"Use the friend\u2019s account. It hurts no one.",
+      v:"It usually violates the tool\u2019s terms of service, it puts your coursework inside someone else\u2019s data, and it hides the real problem — an access gap the instructor cannot see and therefore cannot fix.",
+      p:"Accessibility & equity", k:"warn"},
+     {t:"Tell the instructor about the access gap.",
+      v:"The policy is on your side: when AI use is expected, the university supports equitable access, and instructors should ensure it or provide alternatives. The gap is not your failure — but it stays invisible until someone says it out loud.",
+      p:"Accessibility & equity — this is the move", k:"good"},
+     {t:"Do the project without AI and quietly absorb the grade impact.",
+      v:"Principled, and unfair to you. You would be graded down for an economic condition, in a course that made the tool part of the work. Silence converts an equity problem into your personal deficit.",
+      p:"Accessibility & equity", k:""}]},
+   {s:"The instructor thanks you and asks: \u201CWhat would actually fix this — for everyone, not just you?\u201D",
+    c:[
+     {t:"A class set of institution-provided accounts, or an approved free alternative named in the syllabus.",
+      v:"This is the equity principle turned into logistics. Either the institution provides access, or the assignment is designed so the free tier genuinely suffices — and the syllabus says which.",
+      p:"Accessibility & equity — this is the move", k:"good"},
+     {t:"Extra credit for students who buy the paid tier.",
+      v:"This rewards the ability to pay, which is the opposite of the fix. Whatever the intent, the effect is a grade gap that tracks income.",
+      p:"Accessibility & equity", k:"warn"},
+     {t:"Drop the AI component entirely.",
+      v:"It removes the gap by removing the learning. AI proficiency is part of what this course teaches — the goal is equal access to the skill, not equal distance from it.",
+      p:"None traded — but the outcome is lost", k:""}]}
+  ]}
+],
+admin:[
+ {title:"The detector pitch",
+  stages:[
+   {s:"A vendor demos an AI-writing detector with a dashboard, per-college analytics, and a discount that expires Friday. Two deans are enthusiastic. Faculty are anxious about undisclosed AI use.",
+    c:[
+     {t:"Buy it. Deterrence alone justifies the cost.",
+      v:"Lynn policy already answers this: the university does not rely on AI-output detectors for adjudication, given their known limitations. Buying a tool the policy says cannot decide cases builds an expectation the institution cannot honor — and the false positives will concentrate on international and neurodivergent students.",
+      p:"Accuracy & accountability", k:"warn"},
+     {t:"Decline, and invest the same budget in process-evidence practice: drafts, version history, oral defense.",
+      v:"This is the policy, operationalized. Evidence the institution can explain to a student, a parent, or a hearing beats a score no one can explain. It also moves money from surveillance to pedagogy.",
+      p:"Integrity & accountability — this is the move", k:"good"},
+     {t:"Pilot it quietly in one college and see what happens.",
+      v:"A quiet pilot of an adjudication tool is a governance decision made without governance. The first contested case will surface the pilot, the policy conflict, and the question of who approved it — in that order.",
+      p:"Transparency", k:"warn"}]},
+   {s:"Three weeks later, a faculty member files an academic integrity case. The entire evidence file is one detector score: 96% AI.",
+    c:[
+     {t:"Accept the score. Ninety-six percent is high.",
+      v:"High is not the same as explainable. The policy names what counts: process artifacts, oral defenses, version history, comparison to prior work. A number without a mechanism is an accusation without evidence.",
+      p:"Accuracy & accountability", k:"warn"},
+     {t:"Return the case with guidance: gather process evidence, have the conversation, then refile if warranted.",
+      v:"This protects everyone — including the faculty member, who now builds a case that can survive an appeal. It also teaches the whole college what the evidentiary standard actually is.",
+      p:"Integrity & accountability — this is the move", k:"good"},
+     {t:"Dismiss the case outright.",
+      v:"The score is weak evidence, but the underlying concern may be real. Dismissal punishes the faculty member for using the tool everyone assumed was for exactly this — the failure is systemic, not personal.",
+      p:"None traded — but the concern dies unheard", k:""}]}
+  ]},
+ {title:"The platform that wants in",
+  stages:[
+   {s:"A department asks to roll out a new AI teaching platform across its programs. It is free for education, impressive in the demo, and the faculty champion wants it live before the semester starts.",
+    c:[
+     {t:"Approve it. Free plus enthusiastic faculty equals yes.",
+      v:"The Lynn policy requires a formal review of any new AI product before university use — privacy, security, and licensing. \u201CFree\u201D usually means the data is the price, and the data here is students\u2019.",
+      p:"Privacy & data protection", k:"warn"},
+     {t:"Route it through the review process, and give the department a realistic timeline.",
+      v:"This is what the policy asks for, and the timeline is the part that keeps it honest. A review with no date is a pocket veto; a review with a date is governance.",
+      p:"Privacy & data protection — this is the move", k:"good"},
+     {t:"Refuse all new AI tools this year. The stack is complicated enough.",
+      v:"Simple, and it drives use underground. Faculty who cannot get a yes will use personal accounts, which is the least governed outcome available. A hard no produces shadow AI, not no AI.",
+      p:"Accessibility & equity", k:"warn"}]},
+   {s:"The review finds the platform solid — except it stores student interactions indefinitely on servers the vendor will not locate, and the education tier grants the vendor a license to \u201Cimprove services\u201D with the data.",
+    c:[
+     {t:"Accept the terms. Every vendor writes clauses like that.",
+      v:"Common is not the same as acceptable. Indefinite retention of student data, in an unknown jurisdiction, with a training license, is precisely what the policy\u2019s data rules exist to stop.",
+      p:"Privacy & data protection", k:"warn"},
+     {t:"Negotiate: education-grade data terms, defined retention, no training on student data — or no deal.",
+      v:"Institutions have more leverage than they use. Vendors sign education addenda constantly; they just do not offer them first. The ask is standard, and the walk-away makes it credible.",
+      p:"Privacy & data protection — this is the move", k:"good"},
+     {t:"Approve it, but tell faculty not to let students enter personal information.",
+      v:"This delegates a contract problem to a thousand daily classroom moments. A warning cannot fix terms of service — the burden lands on the people with the least power to carry it.",
+      p:"Integrity & accountability", k:"warn"}]}
+  ]}
+]};
+
+var sim={role:null, sc:0, st:0, votes:null, voteOn:false};
+
+function simRoleScreen(){
+  sim.role=null; sim.sc=0; sim.st=0; sim.votes=null;
+  $('simBox').innerHTML =
+   '<p class="counter">Step 1 of 3 &nbsp;\u2022&nbsp; Choose your seat</p>' +
+   '<div class="rolegrid">' + ROLES.map(function(r){
+     return '<button class="rolecard" data-role="'+r.id+'"><h3>'+r.name+'</h3><p>'+r.desc+'</p></button>';
+   }).join('') + '</div>';
+  Array.prototype.forEach.call($('simBox').querySelectorAll('[data-role]'),function(b){
+    b.onclick=function(){ sim.role=b.dataset.role; sim.sc=0; sim.st=0; drawStage(); };
+  });
+}
+
+function esc(t){var d=document.createElement('div');d.textContent=t;return d.innerHTML;}
+
+function drawStage(){
+  var scen=SIM[sim.role][sim.sc], stage=scen.stages[sim.st];
+  sim.votes=stage.c.map(function(){return 0;});
+  var roleName=ROLES.filter(function(r){return r.id===sim.role;})[0].name;
+  var html =
+   '<p class="crumb"><b>'+roleName+'</b> &nbsp;\u2022&nbsp; Scenario '+(sim.sc+1)+' of '+SIM[sim.role].length+
+   ': '+esc(scen.title)+' &nbsp;\u2022&nbsp; Decision '+(sim.st+1)+' of '+scen.stages.length+'</p>'+
+   '<p class="scene">'+esc(stage.s)+'</p>'+
+   '<div class="row" style="margin:0 0 14px">'+
+     '<label style="display:flex;align-items:center;gap:8px;font-size:13.5px;cursor:pointer">'+
+     '<input type="checkbox" id="voteToggle" style="width:auto"'+(sim.voteOn?' checked':'')+'> Room vote (tally hands before revealing)</label></div>'+
+   '<div id="voteArea"></div>'+
+   '<div id="simChoices"></div>'+
+   '<div id="simVerdict"></div>'+
+   '<div class="row">'+
+     '<button class="act ghost" id="simPrev"'+((sim.sc===0&&sim.st===0)?' disabled':'')+'>Back</button>'+
+     '<button class="act ghost" id="simBack">Change role</button>'+
+     '<button class="act" id="simNext" disabled>Pick an option first</button>'+
+   '</div>';
+  $('simBox').innerHTML=html;
+
+  stage.c.forEach(function(c,i){
+    var b=document.createElement('button');
+    b.className='choice'; b.textContent=String.fromCharCode(65+i)+'.  '+c.t;
+    b.onclick=function(){
+      Array.prototype.forEach.call($('simChoices').children,function(x){x.classList.remove('picked');});
+      b.classList.add('picked');
+      $('simVerdict').innerHTML=
+        '<div class="verdict"><h4>What happens next</h4><p style="margin:0 0 10px">'+esc(c.v)+'</p>'+
+        '<span class="tag '+c.k+'">Policy anchor: '+esc(c.p)+'</span></div>';
+      var nx=$('simNext'); nx.disabled=false;
+      var scen2=SIM[sim.role][sim.sc];
+      nx.textContent = sim.st<scen2.stages.length-1 ? 'Next decision' :
+        (sim.sc<SIM[sim.role].length-1 ? 'Next scenario' : 'Try another role');
+    };
+    $('simChoices').appendChild(b);
+  });
+
+  $('voteToggle').onchange=function(){ sim.voteOn=this.checked; drawVotes(stage); };
+  drawVotes(stage);
+
+  $('simBack').onclick=simRoleScreen;
+  $('simPrev').onclick=function(){
+    if(sim.st>0){ sim.st--; }
+    else if(sim.sc>0){ sim.sc--; sim.st=SIM[sim.role][sim.sc].stages.length-1; }
+    else { simRoleScreen(); return; }
+    drawStage();
+    try{window.scrollTo({top:0,behavior:'smooth'});}catch(e){}
+  };
+  $('simNext').onclick=function(){
+    var scen2=SIM[sim.role][sim.sc];
+    if(sim.st<scen2.stages.length-1){ sim.st++; drawStage(); }
+    else if(sim.sc<SIM[sim.role].length-1){ sim.sc++; sim.st=0; drawStage(); }
+    else { simRoleScreen(); }
+    try{window.scrollTo({top:0,behavior:'smooth'});}catch(e){}
+  };
+}
+
+function drawVotes(stage){
+  var area=$('voteArea');
+  if(!sim.voteOn){ area.innerHTML=''; return; }
+  var total=sim.votes.reduce(function(a,b){return a+b;},0);
+  area.innerHTML =
+   '<div class="votebox"><h4>Room vote</h4>'+
+   '<p class="note" style="margin:0 0 10px">Read the options aloud, ask for hands per option, tap \u002B to tally. '+
+   (total? total+' vote'+(total>1?'s':'')+' recorded.':'No votes yet.')+'</p>'+
+   stage.c.map(function(c,i){
+     var pct= total? Math.round(sim.votes[i]/total*100):0;
+     return '<div class="voterow">'+
+       '<button class="vbtn" data-vm="'+i+'" aria-label="Remove a vote for option '+String.fromCharCode(65+i)+'">\u2212</button>'+
+       '<button class="vbtn" data-vp="'+i+'" aria-label="Add a vote for option '+String.fromCharCode(65+i)+'">\u002B</button>'+
+       '<span class="vlabel">'+String.fromCharCode(65+i)+'. '+esc(c.t)+'</span>'+
+       '<span class="vbar"><i style="width:'+pct+'%"></i></span><b>'+sim.votes[i]+'</b></div>';
+   }).join('')+'</div>';
+  Array.prototype.forEach.call(area.querySelectorAll('[data-vp]'),function(b){
+    b.onclick=function(){ sim.votes[+b.dataset.vp]++; drawVotes(stage); };
+  });
+  Array.prototype.forEach.call(area.querySelectorAll('[data-vm]'),function(b){
+    b.onclick=function(){ var i=+b.dataset.vm; if(sim.votes[i]>0){sim.votes[i]--;} drawVotes(stage); };
+  });
+}
+simRoleScreen();
+
+/* ============================================================
+   2 — ASSIGNMENT REDESIGN (fully self-contained, no network)
+   ============================================================ */
+var LEVELS={
+ "C":["C \u2014 Prohibited",
+  "Generative AI tools are not permitted on any part of this assignment. Submitting AI-generated content as your own work is an academic integrity violation. This task assesses your unaided capability."],
+ "B":["B \u2014 Limited / by permission",
+  "You may not use generative AI on this assignment unless I have given you written permission. If permission is granted, any AI use must be disclosed in a brief AI Use Note at the end of your submission."],
+ "A":["A \u2014 Integrate & disclose",
+  "You may use approved generative AI tools for brainstorming, outlining, and revising this assignment. Include a brief AI Use Note at the end of your submission: which tools you used, for what purpose, and how you reviewed or edited the output. Work without a note is treated as work you claim is entirely your own."],
+ "A3":["A, designated \u2014 AI required, and assessed",
+  "Using AI well is part of the learning outcome for this assignment. Submit your prompts (or a summary of them) and a short critique of what the model got wrong or missed. Your prompting and your verification are part of the grade."]
+};
+var PATTERNS=[
+ ["Process over product","Split the deliverable into stages that are each submitted: a proposal or outline by [date 1], an annotated draft by [date 2], and the final version with a short note on what changed between drafts and why. The stages are graded, not just collected."],
+ ["Local and specific","Anchor the task to material a model has not seen: this campus, this cohort, this semester\u2019s dataset, a guest speaker\u2019s claims, or an event from the past month. Require at least two specifics that only someone present could supply."],
+ ["Personal experience","Require a section that draws on something the author lived: a shift, a rehearsal, a clinical placement, a family business, a failure. Grade whether the experience does analytical work, not whether it is dramatic."],
+ ["Oral defense","Add a five-minute conversation after submission: the student walks through their argument and answers two questions they have not seen. The defense confirms authorship better than any detector."],
+ ["Iterative critique","Instead of producing with AI, have students critique it: generate an AI answer to the prompt, then write an assessment of what it gets wrong, what it omits, and what it cannot know. The critique is the deliverable."],
+ ["Live and in-class","Move a portion of the evidence of thinking into the room: a timed outline, a whiteboard argument map, or a short in-class write that the take-home work must build on. The in-class artifact travels with the submission."],
+ ["Show the prompts","Require the AI transcript as an appendix. The transcript becomes assessable work: you grade the quality of the questions asked, the skepticism applied, and the gap between what the model offered and what the student kept."],
+ ["Authentic audience","Aim the work at a real reader with a real stake: a client, a campus office, a community partner, a younger cohort. Being wrong has a consequence beyond the grade, and generic prose fails on contact."]
+];
+/* verbs and shapes that a model reproduces at a passing standard */
+var EXPOSED=[/summar/i,/overview/i,/\bdefine\b/i,/definition/i,/discuss the/i,/describe/i,/explain the/i,
+ /importance of/i,/compare and contrast/i,/list\b/i,/research paper/i,/essay on/i,/reflect on the reading/i,
+ /literature review/i,/pros and cons/i,/advantages and disadvantages/i];
+var SHIELDED=[/interview/i,/in class|in-class/i,/oral/i,/present(ation)? to/i,/your (own )?experience/i,
+ /this (campus|semester|course|cohort)/i,/collect(ed)? data/i,/field/i,/lab\b/i,/draft/i,/journal/i,/observ/i];
+
+$('rGo').onclick=function(){
+  var text=$('rIn').value.trim();
+  var out=$('rOut'), lvl=$('rRung').value, disc=$('rDisc').value.trim();
+  if(text.length<40){ out.hidden=false; out.textContent="Paste a bit more of the assignment \u2014 at least a couple of sentences, including the deliverable."; return; }
+  out.hidden=false;
+
+  var hits=EXPOSED.filter(function(rx){return rx.test(text);}).length;
+  var guards=SHIELDED.filter(function(rx){return rx.test(text);}).length;
+  var score=Math.max(10,Math.min(95, 45+hits*12-guards*14));
+  var read;
+  if(score>=75) read="High exposure. As written, a current model could likely produce most of this deliverable at a passing standard from the prompt alone. The task verbs here (summarize, describe, discuss) are the most exposed verbs in academic writing, and there is no checkpoint that would make substitution visible.";
+  else if(score>=45) read="Moderate exposure. A model could produce a plausible version of parts of this, but elements of the task resist substitution. The gap to close is visibility: without process checkpoints, you cannot tell the resistant parts from the outsourced ones.";
+  else read="Lower exposure. The task already contains elements a model cannot supply \u2014 keep them, and make them load-bearing in the grade rather than decorative.";
+
+  /* choose the two most useful patterns for this prompt */
+  var pick=[];
+  if(!/draft|process|stages/i.test(text)) pick.push(0);        /* process over product */
+  if(!/prompt|transcript|appendix/i.test(text) && lvl!=="C") pick.push(6); /* show the prompts */
+  if(pick.length<2 && !/oral|present/i.test(text)) pick.push(3);
+  if(pick.length<2) pick.push(1);
+  pick=pick.slice(0,2);
+  if(lvl==="C" && pick.indexOf(6)>-1){ pick=[0, /oral|present/i.test(text)?1:3]; }
+
+  var discLine = disc? ("For "+disc+", weight the pattern that matches how your field verifies work \u2014 a defense, a demonstration, or documented process.") : "";
+
+  out.textContent =
+"AI EXPOSURE \u2014 "+score+"% (estimate)\n"+read+"\n\n"+
+"REDESIGN \u2014 two patterns applied\n"+
+pick.map(function(i){return "\u2022 "+PATTERNS[i][0]+": "+PATTERNS[i][1];}).join("\n")+"\n"+
+(discLine? discLine+"\n":"")+
+"Keep the same topic and the same learning objective \u2014 change the task, not the subject.\n\n"+
+"SYLLABUS LANGUAGE \u2014 level "+LEVELS[lvl][0]+"\n"+
+"\u201C"+LEVELS[lvl][1]+"\u201D\n\n"+
+"RUBRIC LINE\n"+
+"Process evidence (10%) \u2014 Full marks: drafts, notes, or prompt transcripts show a line of reasoning that developed over time and responded to feedback, rather than a single finished artifact.\n\n"+
+"This is a starting point, not a finished assignment. Your disciplinary judgment is what makes it usable \u2014 which is the entire argument of the session.";
+};
+
+/* ============================================================
+   3 — READINESS SELF-ASSESSMENT
+   ============================================================ */
+var DIMS=[
+ ["Governance","Who decides, who reviews, who is accountable."],
+ ["Ethical","Stated principles that survive a hard case."],
+ ["Faculty & Leadership","Capability and authority in the same people."],
+ ["Curriculum","Outcomes that reflect how work is actually done now."],
+ ["Workforce","Graduates employers can defend hiring."]
+];
+var QS=[
+ [0,"If a student challenged an AI-related grade decision I made, I could show them the written rule they broke."],
+ [0,"I know who at Lynn decides an AI-related academic integrity case, and what the steps are."],
+ [0,"My syllabus states a different AI expectation for different assignments, not one blanket rule."],
+ [1,"I have decided in advance what I will do the first time I suspect undisclosed AI use this term."],
+ [1,"I know which student data I may not put into a consumer AI tool, and I have never done it."],
+ [1,"I have told my students what I use AI for in this course, including in grading."],
+ [2,"I could explain to a colleague why a detector score is not evidence."],
+ [2,"I have changed at least one assignment because of AI in the last twelve months."],
+ [2,"When I raise an AI concern, there is somebody whose job it is to act on it."],
+ [3,"At least one of my assessments requires something a model cannot produce \u2014 local data, lived experience, or live defense."],
+ [3,"My learning outcomes still describe the work my students will actually do after graduation."],
+ [3,"I grade some evidence of process, not only the final artifact."],
+ [4,"My students could explain to an employer how they use AI responsibly in my field."],
+ [4,"I teach students to check AI output against a source, and I assess whether they did."],
+ [4,"I know what AI skills employers in my discipline are currently screening for."]
+];
+var SC=[["Not yet",0],["Partly",1],["Mostly",2],["Yes",3]];
+var ans=new Array(QS.length).fill(null);
+
+function buildQs(){
+  $('qBox').innerHTML = QS.map(function(q,i){
+   return '<div class="q"><p><strong>'+(i+1)+'.</strong> '+q[1]+'</p>'+
+    '<div class="scale" data-q="'+i+'">'+SC.map(function(s,j){
+      return '<button data-v="'+j+'">'+s[0]+'</button>';}).join('')+'</div></div>';}).join('');
+  Array.prototype.forEach.call($('qBox').querySelectorAll('.scale'),function(sc){
+    Array.prototype.forEach.call(sc.querySelectorAll('button'),function(b){
+      b.onclick=function(){
+        Array.prototype.forEach.call(sc.querySelectorAll('button'),function(x){x.classList.remove('on');});
+        b.classList.add('on'); ans[+sc.dataset.q]=+b.dataset.v;
+      };
+    });
+  });
+}
+buildQs();
+$('sReset').onclick=function(){ans=new Array(QS.length).fill(null);buildQs();$('sOut').hidden=true;try{window.scrollTo({top:0,behavior:'smooth'});}catch(e){}};
+
+$('sGo').onclick=function(){
+  var miss=ans.filter(function(a){return a===null;}).length;
+  var o=$('sOut'); o.hidden=false;
+  if(miss){ o.innerHTML='<p class="note">'+miss+' question'+(miss>1?'s':'')+' still unanswered. Answer all fifteen for a usable profile.</p>'; return; }
+  var tot=[0,0,0,0,0];
+  QS.forEach(function(q,i){tot[q[0]]+=ans[i];});
+  var pct=tot.map(function(t){return Math.round(t/9*100);});
+  var low=pct.indexOf(Math.min.apply(null,pct));
+  o.innerHTML =
+   '<h3>Your profile</h3>' +
+   DIMS.map(function(d,i){
+    return '<div style="margin-bottom:14px">'+
+      '<p class="dimhead">'+d[0]+' <span style="float:right;font-family:var(--sans);font-size:14px;color:var(--mute)">'+pct[i]+'%</span></p>'+
+      '<p class="dimsub">'+d[1]+'</p>'+
+      '<div class="bar"><i class="'+(i===low?'low':'')+'" style="width:'+pct[i]+'%"></i></div></div>';}).join('') +
+   '<div class="verdict" style="margin-top:6px">'+
+     '<h4>Your capping dimension: '+DIMS[low][0]+'</h4>'+
+     '<p style="margin:0">Readiness is capped by the weakest dimension, not averaged across them. Strength '+
+     'everywhere else does not compensate \u2014 it just means the failure, when it comes, will be a surprise. '+
+     'Whatever you do next, do it here.</p></div>'+
+    '<p class="note" style="margin-top:14px">Now answer the question the score cannot: if a student challenged '+
+    'an AI-related grade decision you made this semester, could you show them the rule they broke? The gap '+
+    'between your score and that answer is your real readiness.</p>';
+  if(o.scrollIntoView)try{o.scrollIntoView({behavior:'smooth',block:'nearest'});}catch(e){}
+};
+
+/* ============================================================
+   4 — DETECTOR DEMO
+   ============================================================ */
+var PASS=[
+ {t:"The results of the experiment were consistent with our hypothesis. The treatment group demonstrated a significant improvement compared to the control group. These findings suggest that the intervention is effective and should be considered for wider implementation in similar settings.",
+  score:92,
+  why:"Written by a second-year international student. Every sentence is grammatically standard and structurally plain \u2014 which is exactly what detectors measure. Low surprise per word reads as machine-like, so the student\u2019s careful, learned English is the thing being flagged."},
+ {t:"I still think about the smell of the hangar at four in the morning \u2014 jet fuel over something else, something the fuel was there to cover. Nobody teaches you that part. You learn it standing on the flight line at the end of a shift, wondering whether you signed off the right thing at 2 a.m. or just the fast thing.",
+  score:8,
+  why:"Also human. It scores low because it is unusual \u2014 specific sensory detail, an incomplete thought, a sentence that turns on itself. Detectors reward strangeness. That means the students most likely to be cleared are the ones who already write with confidence."},
+ {t:"Effective time management is essential for academic success. By prioritizing tasks and setting clear goals, students can reduce stress and improve performance. It is important to remember that developing these skills takes practice, but the long-term benefits are well worth the effort.",
+  score:97,
+  why:"Human as well \u2014 a study-skills handout written by a staff advisor in 2014, years before ChatGPT existed. All three passages were written by people. If you flagged one, so would a detector, and it would be just as wrong."}
+];
+var dShown=new Array(PASS.length).fill(false);
+function buildDet(){
+  $('detBox').innerHTML = PASS.map(function(p,i){
+   return '<div style="padding-bottom:20px;margin-bottom:20px;border-bottom:'+(i<PASS.length-1?'1px solid var(--line)':'0')+'">'+
+     '<p class="counter">Passage '+(i+1)+'</p>'+
+     '<div class="passage">'+p.t+'</div>'+
+     '<button class="act ghost" data-r="'+i+'">Show what a detector says</button>'+
+     '<div id="rev'+i+'"></div></div>';}).join('');
+  Array.prototype.forEach.call($('detBox').querySelectorAll('[data-r]'),function(b){
+    b.onclick=function(){
+      var i=+b.dataset.r; if(dShown[i])return; dShown[i]=true; b.disabled=true;
+      var p=PASS[i];
+      $('rev'+i).innerHTML=
+       '<div class="meter"><span class="note" style="min-width:96px">AI likelihood</span>'+
+        '<div class="track"><i id="bar'+i+'"></i></div><b>'+p.score+'%</b></div>'+
+       '<p><span class="tag good">Actually written by a person</span></p>'+
+       '<p style="margin:0">'+p.why+'</p>';
+      requestAnimationFrame(function(){ $('bar'+i).style.width=p.score+'%'; });
+      if(dShown.every(Boolean)) revealNote();
+    };
+  });
+}
+function revealNote(){
+  var n=$('detNote'); n.hidden=false;
+  n.innerHTML=
+   '<h3>What the research actually found</h3>'+
+   '<p>Seven widely used detectors were run on 91 TOEFL essays written by non-native English speakers. '+
+   'The average false-positive rate was <strong>61%</strong>. On US eighth-grade essays the same detectors '+
+   'were near-perfect. Ninety-eight percent of the TOEFL essays were flagged by at least one detector. '+
+   '<span class="note">(Liang et al., <em>Patterns</em>, 2023.)</span></p>'+
+   '<p>A separate evaluation of fourteen detection tools found that <strong>none reached 80% accuracy</strong>, '+
+   'and all produced both false positives and false negatives. '+
+   '<span class="note">(Weber-Wulff et al., 2023.)</span> Turnitin acknowledges a \u00B115 point variance in its own scores.</p>'+
+   '<p>Lynn\u2019s own policy draws the conclusion: the university does not rely on AI-output detectors for '+
+   'adjudication, given their known limitations. Evidence should focus on process artifacts, oral defenses, '+
+   'version history, and comparisons to prior work.</p>'+
+   '<p style="margin-bottom:0"><strong>A detector score is not evidence. It is a reason to have a conversation.</strong></p>';
+  if(n.scrollIntoView)try{n.scrollIntoView({behavior:'smooth',block:'nearest'});}catch(e){}
+}
+buildDet();
+
+/* ============================================================
+   5 — POLICY LANGUAGE LIBRARY
+   ============================================================ */
+var LIB=[
+{h:"Lynn's five key principles",
+ src:"Lynn University Policy on the Use of Generative AI \u2014 Key Principles",
+ t:"Integrity and Accountability: AI must not replace a student's or employee's own learning, authorship, or judgment unless explicitly permitted. Misrepresentation of AI-generated work as one's own is an academic or professional integrity violation.\n\nTransparency: When AI is permitted, students must disclose what tools were used, for which parts, and how prompts/outputs were revised.\n\nPrivacy & Data Protection: Students, faculty and staff must not input confidential, FERPA-protected, proprietary, or regulated data into public AI tools. Only institutionally approved tools may be used for sensitive or identifiable data.\n\nAccuracy & Accountability: Users are responsible for verifying the accuracy, originality, and ethical appropriateness of AI-generated content.\n\nAccessibility & Equity: The university supports equitable access to AI tools and will provide guidance when AI use is expected. Instructors providing or allowing AI should ensure equitable access or provide alternatives."},
+{h:"Syllabus statement A \u2014 Integrate & Disclose (default)",
+ src:"Lynn University Policy on the Use of Generative AI \u2014 Sample Syllabus Language",
+ t:"Generative AI tools may be used for brainstorming, outlining, and revising with disclosure. Include an AI Use Note describing tools, prompts, and edits. Not allowed on exams or assignments unless designated."},
+{h:"Syllabus statement B \u2014 Limited / By Permission",
+ src:"Lynn University Policy on the Use of Generative AI \u2014 Sample Syllabus Language",
+ t:"You may not use AI unless given written permission. Unauthorized use violates the academic integrity policy. Any AI use, if given permission, must be disclosed per college/course policies as in A above."},
+{h:"Syllabus statement C \u2014 Prohibited",
+ src:"Lynn University Policy on the Use of Generative AI \u2014 Sample Syllabus Language",
+ t:"Generative AI tools are not permitted on any coursework. Submitting AI-generated content as your own work is an academic integrity violation."},
+{h:"The Student AI Use Note",
+ src:"Lynn University Policy on the Use of Generative AI \u2014 Template",
+ t:"AI Use Note\n\n1. Tool(s) used.\n2. Where AI was used (brainstorming, outline, draft paragraphs, code comments, etc.)\n3. Prompt(s) or summary.\n4. Revisions and verification steps.\n5. Limitations or risks noticed (hallucinations, bias, missing citations)."},
+{h:"Assignment disclosure block \u2014 Option A (AI used)",
+ src:"ISM 412 course practice \u2014 students paste one option at the end of every assignment",
+ t:"AI Use Disclosure \u2014 Option A\n\nI used artificial intelligence tools (such as ChatGPT, Grammarly, or similar systems) to support brainstorming, organization of ideas, or clarification of concepts while preparing this assignment. All technical work, analysis, screenshots, labs, observations, and final explanations reflect my own understanding and were reviewed and edited by me to ensure accuracy and alignment with the assignment requirements."},
+{h:"Assignment disclosure block \u2014 Option B (no AI used)",
+ src:"ISM 412 course practice",
+ t:"AI Use Disclosure \u2014 Option B\n\nI did not use any artificial intelligence tools in the preparation of this assignment. All work submitted reflects my own research, analysis, and writing."},
+{h:"Citing ChatGPT in APA 7",
+ src:"ISM 412 course practice",
+ t:"Reference list:\nOpenAI. (2023). ChatGPT: A large language model [Computer software]. https://chat.openai.com/chat\n\nIn-text citation: (OpenAI, 2023)"},
+{h:"Responsible AI Decision Check \u2014 seven questions",
+ src:"The Ethics of AI workshop deck \u2014 use before you use, or permit, AI",
+ t:"PURPOSE \u2014 Why is AI being used?\nLEARNING \u2014 Does it support or bypass the learning outcome?\nHUMAN \u2014 Where does human judgment remain?\nDATA \u2014 What information is being shared?\nVERIFY \u2014 Who checks the output?\nDISCLOSE \u2014 Is AI use appropriately transparent?\nOWN \u2014 Who takes responsibility?\n\nSeven questions. One principle: humans remain accountable."},
+{h:"Faculty responsible-AI checklist \u2014 ten questions",
+ src:"Session takeaway \u2014 The Ethics of AI, Lynn University Faculty Development",
+ t:"Before using AI, ask:\n\n1. Does this support the learning outcome?\n2. Is human judgment still central?\n3. Have expectations been communicated?\n4. Is AI use disclosed?\n5. Is sensitive data protected?\n6. Has the output been verified?\n7. Could bias affect the result?\n8. Is access equitable?\n9. Can I explain and defend the decision?\n10. Would I be comfortable telling my students exactly how AI was used?"}
+];
+
+function buildLib(){
+  $('libBox').innerHTML = LIB.map(function(x,i){
+   return '<div class="lib"><button class="copy" data-c="'+i+'">Copy</button>'+
+     '<h3>'+x.h+'</h3><p class="src">'+x.src+'</p>'+
+     '<pre id="libt'+i+'"></pre></div>';}).join('');
+  LIB.forEach(function(x,i){ $('libt'+i).textContent=x.t; });
+  Array.prototype.forEach.call($('libBox').querySelectorAll('.copy'),function(b){
+    b.onclick=function(){
+      var t=LIB[+b.dataset.c].t;
+      function ok(){ b.textContent='Copied'; b.classList.add('done');
+        setTimeout(function(){b.textContent='Copy';b.classList.remove('done');},1800); }
+      if(navigator.clipboard && navigator.clipboard.writeText){
+        navigator.clipboard.writeText(t).then(ok,function(){fallback();});
+      } else fallback();
+      function fallback(){
+        var ta=document.createElement('textarea'); ta.value=t;
+        ta.style.position='fixed'; ta.style.opacity='0';
+        document.body.appendChild(ta); ta.select();
+        try{ document.execCommand('copy'); ok(); }catch(e){}
+        document.body.removeChild(ta);
+      }
+    };
+  });
+}
+buildLib();
+
+/* deep link on load */
+if(location.hash.slice(1)) show(location.hash.slice(1));
+</script>
+</body>
+</html>
